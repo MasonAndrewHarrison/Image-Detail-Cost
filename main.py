@@ -15,22 +15,25 @@ transform = transforms.Compose([
 
 
 kernel_sharp_y = torch.tensor([
-    [-1, -2, -1],
-    [0.2, 0, 0.2],
-    [1, 2, 1]
+    [-1, -1, -1],
+    [0, 0, 0],
+    [1, 1, 1]
 ], dtype=torch.float32).repeat(3,1,1,1)
 
 kernel_sharp_x = torch.tensor([
-    [-1, 0.2, 1],
-    [-2, 0, 2],
-    [-1, 0.2, 1]
+    [-1, 0, 1],
+    [-1, 0, 1],
+    [-1, 0, 1]
 ], dtype=torch.float32).repeat(3,1,1,1)
 
 kernel_blur = torch.tensor([
-    [1, 2, 1],
-    [2, 3, 2],
-    [1, 2, 1],
+    [1, 1, 1],
+    [1, 1, 1],
+    [1, 1, 1],
 ], dtype=torch.float32).repeat(3,1,1,1)
+
+separable_conv = torch.tensor([1, 1, 1], dtype=torch.float32).unsqueeze(1).unsqueeze(1).unsqueeze(0)
+
 
 dataset = ImageFolder(root='dataset1/', transform=transform)
 dataset_size = len(dataset)
@@ -45,13 +48,11 @@ conv_img[0] = image
 
 for i in range(iteration):
 
-
-    conv_img[i] = F.conv2d(conv_img[i], kernel_sharp_x, padding=1, groups=3)
-    conv_img[i] = F.conv2d(conv_img[i], kernel_sharp_y, padding=1, groups=3)
-    conv_img[i+1] = torch.clamp(conv_img[i], 0.0, 1.0)
-    conv_img[i] = F.conv2d(conv_img[i], kernel_blur, padding=1, groups=3)
-    conv_img[i+1] = torch.clamp(conv_img[i], 0.0, 1.0)
-    print(conv_img[i].min(), conv_img[i].max())
+    out = F.conv2d(conv_img[i], kernel_sharp_x, padding=1, groups=3)
+    out = F.conv2d(out, kernel_sharp_y, padding=1, groups=3)
+    out = torch.clamp(out, 0.0, 1.0)
+    out = F.conv2d(out, kernel_blur, padding=1, groups=3)
+    conv_img[i+1] = torch.clamp(out, 0.0, 1.0)
 
 
 
