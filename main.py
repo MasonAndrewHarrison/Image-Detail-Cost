@@ -35,7 +35,7 @@ kernel_blur = torch.tensor([
 separable_conv = torch.tensor([1, 1, 1], dtype=torch.float32).unsqueeze(1).unsqueeze(1).unsqueeze(0)
 
 
-dataset = ImageFolder(root='dataset1/', transform=transform)
+dataset = ImageFolder(root='dataset/', transform=transform)
 dataset_size = len(dataset)
 index = random.randint(0, dataset_size-1)
 
@@ -60,7 +60,7 @@ image = image.squeeze().permute(1, 2, 0)
 conv_img = [img.squeeze(0).permute(1, 2, 0) for img in conv_img]
 
 
-fig, axes = plt.subplots(2, 3, figsize=(21, 15))
+fig, axes = plt.subplots(2, 3, figsize=(18, 10))
 axes[0, 0].imshow(image)
 axes[0, 1].imshow(conv_img[1])
 axes[0, 2].imshow(conv_img[5])
